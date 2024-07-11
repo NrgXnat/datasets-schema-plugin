@@ -23,7 +23,7 @@ plugins {
 group "org.nrg.xnatx.plugins"
 version "1.0.0-SNAPSHOT"
 
-description = "Datatype Stubs Plugin"
+description = "Datasets Schema Plugin"
 
 repositories {
     mavenLocal()
