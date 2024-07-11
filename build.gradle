@@ -1,0 +1,90 @@
+/*
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2005-2021, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ */
+
+buildscript {
+    ext {
+        vXnat = "1.8.11-SNAPSHOT"
+    }
+}
+
+plugins {
+    id "java"
+    id "maven-publish"
+    id "io.spring.dependency-management" version "1.1.0"
+    id "net.linguica.maven-settings" version "0.5"
+    id "org.nrg.xnat.build.xnat-data-builder" version "${vXnat}"
+}
+
+group "org.nrg.xnatx.plugins"
+version "1.0.0-SNAPSHOT"
+
+description = "Datatype Stubs Plugin"
+
+repositories {
+    mavenLocal()
+    maven { url "https://nrgxnat.jfrog.io/nrgxnat/libs-release" }
+    maven { url "https://nrgxnat.jfrog.io/nrgxnat/libs-snapshot" }
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.nrg:parent:${vXnat}"
+    }
+    generatedPomCustomization {
+        enabled = false
+    }
+}
+
+dependencies {
+    implementation platform("org.nrg:parent:${vXnat}")
+
+    implementation("org.nrg.xnat:web") {
+        transitive = false
+    }
+    implementation("org.nrg.xnat:xnat-data-models") {
+        transitive = false
+    }
+    implementation("org.nrg.xdat:core") {
+        transitive = false
+    }
+    implementation "org.nrg:framework"
+
+    implementation("turbine:turbine") {
+        transitive = false
+    }
+    implementation("org.apache.velocity:velocity") {
+        transitive = false
+    }
+
+    implementation "org.slf4j:slf4j-api"
+    implementation "org.slf4j:log4j-over-slf4j"
+}
+
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "https://nrgxnat.jfrog.io/nrgxnat/libs-${project.version.endsWith("-SNAPSHOT") ? "snapshot" : "release"}"
+            // The value for name must match <id> in ~/.m2/settings.xml
+            name = "XNAT_Artifactory"
+        }
+    }
+
+}
