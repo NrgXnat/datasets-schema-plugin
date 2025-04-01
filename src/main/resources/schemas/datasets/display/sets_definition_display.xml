@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ datasets-schema-plugin: sets_definition_display.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2005-2025, Washington University School of Medicine
+  ~ All Rights Reserved
+  ~
+  ~ Released under the Simplified BSD.
+  -->
+
+<Displays xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xdat/display.xsd" schema-element="sets:definition" full-description="Definition" brief-description="Definition">
+    <DisplayField id="EXPT_ID" header="ID" visible="true" searchable="true">
+        <DisplayFieldElement name="Field1" schema-element="sets:definition.ID"/>
+        <HTML-Link>
+            <Property name="HREF" value="none"/>
+            <Property name="ONCLICK" value="return rpt('@Field1','sets:definition','sets:definition.ID');">
+                <InsertValue id="Field1" field="EXPT_ID"/>
+            </Property>
+        </HTML-Link>
+    </DisplayField>
+</Displays>
+
