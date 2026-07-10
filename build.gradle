@@ -8,20 +8,19 @@
 
 buildscript {
     ext {
-        vXnat = "1.8.10"
+        vXnat = "1.10.1-SNAPSHOT"
     }
 }
 
 plugins {
     id "java"
     id "maven-publish"
-    id "io.spring.dependency-management" version "1.1.0"
-    id "net.linguica.maven-settings" version "0.5"
+    id "io.spring.dependency-management" version "1.1.7"
     id "org.nrg.xnat.build.xnat-data-builder" version "${vXnat}"
 }
 
 group "org.nrg.xnatx.plugins"
-version "1.1.0"
+version "1.2.0-SNAPSHOT"
 
 description = "Datasets Schema Plugin"
 
@@ -47,9 +46,7 @@ dependencies {
     implementation("org.nrg.xnat:web") {
         transitive = false
     }
-    implementation("org.nrg.xnat:xnat-data-models") {
-        transitive = false
-    }
+    // xnat-data-models merged into xnat-web in monorepo 1.10
     implementation("org.nrg.xdat:core") {
         transitive = false
     }
@@ -69,7 +66,7 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -81,9 +78,17 @@ publishing {
     }
     repositories {
         maven {
-            url "https://nrgxnat.jfrog.io/nrgxnat/libs-${project.version.endsWith("-SNAPSHOT") ? "snapshot" : "release"}"
-            // The value for name must match <id> in ~/.m2/settings.xml
             name = "XNAT_Artifactory"
+            url = project.version.toString().endsWith("-SNAPSHOT")
+                ? "https://nrgxnat.jfrog.io/nrgxnat/libs-snapshot-local"
+                : "https://nrgxnat.jfrog.io/nrgxnat/libs-release-local"
+            // CI injects ORG_GRADLE_PROJECT_artifactoryUser/Token env vars (Gradle maps
+            // these to project properties). Local devs can set artifactoryUser/Token in
+            // ~/.gradle/gradle.properties. Mirrors monorepo's buildSrc convention.
+            credentials {
+                username = (project.findProperty("artifactoryUser")  ?: System.getenv("ARTIFACTORY_USER"))  ?: ""
+                password = (project.findProperty("artifactoryToken") ?: System.getenv("ARTIFACTORY_TOKEN")) ?: ""
+            }
         }
     }
 
